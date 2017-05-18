@@ -189,14 +189,14 @@ class MapObj:
         for p in pointcloudfile.read(self.file):
             if self.is_ground(p):
                 continue
-            p_cols = {k: v for k, v in list(p._asdict().items()) if k not in 'xyz'}
+            p_cols = {k: v for k, v in p._asdict().items() if k not in 'xyz'}
             idx = coords(p)
             # update filtered_density and divide by this later
             self.filtered_density[idx] += 1
             if idx not in self.colours:
                 self.colours[idx] = p_cols
             else:
-                for k, v in list(p_cols.items()):
+                for k, v in p_cols.items():
                     self.colours[idx][k] += v
 
     def is_ground(self, point) -> bool:
@@ -235,7 +235,7 @@ class MapObj:
         trees = {k: i for i, k in enumerate(tuple(key_scale_record))}
         connected_components(trees)
         # Copy labels to grid of original scale
-        return {s: trees[k] for k, v in list(key_scale_record.items()) for s in v}
+        return {s: trees[k] for k, v in key_scale_record.items() for s in v}
 
     def tree_data(self, keys: Set[XY_Coord]) -> dict:
         """Return a dictionary of data about the tree in the given keys.
@@ -258,7 +258,7 @@ class MapObj:
         for k in keys:
             out['height'] = max(out['height'], self.canopy[k] - self.ground[k])
             out['point_count'] += self.density[k]
-            for colour, total in list(self.colours[k].items()):
+            for colour, total in self.colours[k].items():
                 out[colour] = total / self.filtered_density[k]
         return out
 
@@ -267,7 +267,7 @@ class MapObj:
         """
         ids = list(set(self.trees.values()))
         keys = {v: set() for v in ids}
-        for k, v in list(self.trees.items()):
+        for k, v in self.trees.items():
             if v is None:
                 continue
             keys[v].add(k)
@@ -360,7 +360,7 @@ def main_processing():
     """ Logic on which functions to call, and efficient order.
     """
     # args is a global variable
-    print(('Reading from "{}" ...'.format(args.file)))
+    print('Reading from "{}" ...'.format(args.file))
 
     # File I/O
 
@@ -372,14 +372,14 @@ def main_processing():
     sparse = sparse.replace('_part_1', '')
     if os.path.isfile(sparse):
         attr_map = MapObj(sparse)
-        print(('Read {} points into {} cells'.format(
-            len(attr_map), len(attr_map.canopy))))
+        print('Read {} points into {} cells'.format(
+            len(attr_map), len(attr_map.canopy)))
     else:
         attr_map = MapObj(args.file, colours=False)
-        print(('Read {} points into {} cells, writing "{}" ...'.format(
-            len(attr_map), len(attr_map.canopy), sparse)))
+        print('Read {} points into {} cells, writing "{}" ...'.format(
+            len(attr_map), len(attr_map.canopy), sparse))
         attr_map.save_sparse_cloud(sparse)
-        print(('Reading colours from ' + sparse))
+        print('Reading colours from ' + sparse)
         attr_map.update_colours()
     print('File IO complete, starting analysis...')
 

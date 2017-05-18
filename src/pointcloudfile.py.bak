@@ -211,7 +211,7 @@ class IncrementalWriter:
 
     def __del__(self):
         """Flush data to disk and clean up."""
-        to_ply_types = {v: k for k, v in list(PLY_TYPES.items())}
+        to_ply_types = {v: k for k, v in PLY_TYPES.items()}
         properties = ['property {t} {n}'.format(t=t, n=n) for t, n in zip(
             (to_ply_types[p] for p in self.header.form_str[1:]),
             self.header.names)]
